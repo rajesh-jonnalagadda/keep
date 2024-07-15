@@ -6,6 +6,53 @@ import { Button } from "@tremor/react";
 import Modal from "@/components/ui/Modal";
 import PageClient from "./builder/page.client";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { TiArrowRight } from "react-icons/ti";
+
+
+
+export function WorkflowSteps({ workflow }: { workflow: any }) {
+  console.log("workflow===========>", workflow);
+  const isActionPresent = !!workflow?.actions?.length;
+  return (
+    <div className="flex gap-2 items-center mb-4 flex-wrap">
+      {workflow?.actions?.map((step: any, index: number) => {
+        console.log("step in action", step, index);
+        const provider = step?.provider;
+        return (
+          <div key={`action-${index}`} className="flex items-center gap-2">
+            {index > 0 && <TiArrowRight style={{ width: 30, height: 30 }} className="text-gray-500 align-self: center" />}
+            <Image
+              src={`/icons/${provider?.type}-icon.png`}
+              width={30}
+              height={30}
+              alt={provider?.type}
+              className="mt-6"
+            />
+          </div>
+        );
+      })}
+      {workflow?.steps?.map((step: any, index: number) => {
+        console.log("step in steps", step);
+        const provider = step?.provider;
+        return (
+          <div key={`step-${index}`} className="flex items-center gap-2">
+            {(index > 0 || isActionPresent) && (
+              <TiArrowRight style={{ width: 30, height: 30 }} className="text-gray-500 align-self: center" />
+            )}
+            <Image
+              src={`/icons/${provider?.type}-icon.png`}
+              width={30}
+              height={30}
+              alt={provider?.type}
+              className="mt-6"
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function MockWorkflowCardSection({ mockWorkflows, mockError, mockLoading }) {
   const router = useRouter();
@@ -46,15 +93,17 @@ export default function MockWorkflowCardSection({ mockWorkflows, mockError, mock
         {!mockLoading && mockWorkflows.length === 0 && <p>No workflows found</p>}
         {!mockLoading && mockWorkflows.length > 0 && mockWorkflows.map((template: any, index: number) => {
           const workflow = template.workflow;
+          console.log("insise th emao workflwo", workflow);
           return (
-            <div key={index} className="title-card p-4 border rounded bg-white flex flex-col shadow h-50">
+            <div key={index} className="card p-4 border rounded bg-white flex flex-col shadow">
               <div className="flex-grow">
+                <WorkflowSteps workflow={workflow} />
                 <h3 className="text-lg sm:text-xl font-semibold line-clamp-2">{workflow.name || getNameFromId(workflow.id)}</h3>
                 <p className="mt-2 text-sm sm:text-base line-clamp-3">{workflow.description}</p>
               </div>
               <div className="mt-auto">
                 <Button
-                  className="inline-block mt-8 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded"
+                  className="inline-block mt-8 px-4 py-2 border-none bg-gray-200 hover:bg-gray-300 bold-medium transition text-black rounded"
                   onClick={(e) => {
                     e.preventDefault();
                     localStorage.setItem('preview_workflow', JSON.stringify(template));
