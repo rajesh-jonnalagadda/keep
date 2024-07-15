@@ -2,6 +2,7 @@ import io
 import logging
 import os
 import uuid
+import random
 
 import requests
 import validators
@@ -218,3 +219,42 @@ class WorkflowStore:
             self.logger.error(f"Error parsing workflow: {e}")
             raise e
         return workflow
+
+    def get_random_workflow_templates(self, tenant_id: str, workflows_dir: str, limit: int) -> list[dict]:
+        """
+        Get random workflows from a directory.
+        Args:
+            tenant_id (str): The tenant to which the workflows belong.
+            workflows_dir (str): A directory containing workflows yamls.
+            count (int): The number of workflows to return.
+
+        Returns:
+            List[Workflow]: A list of workflows
+        """
+        if not os.path.isdir(workflows_dir):
+            raise FileNotFoundError(f"Directory {workflows_dir} does not exist")
+
+        workflow_yaml_files = [f for f in os.listdir(workflows_dir) if f.endswith(('.yaml', '.yml'))]
+        if not workflow_yaml_files:
+            raise FileNotFoundError(f"No workflows found in directory {workflows_dir}")
+
+        random.shuffle(workflow_yaml_files)
+        workflows = []
+        count = 0
+        for file in workflow_yaml_files:
+            if(count == limit):
+                break
+            try:
+                file_path = os.path.join(workflows_dir, file)
+                workflow_yaml = self._parse_workflow_to_dict(file_path)
+                if "workflow" in workflow_yaml:
+                    workflow_yaml['name'] = workflow_yaml['workflow']['id']
+                    workflow_yaml['workflow_raw'] = yaml.dump(workflow_yaml)
+                    workflows.append(workflow_yaml)
+                    count += 1
+
+                self.logger.info(f"Workflow from {file} fetched successfully {workflow_yaml}")
+            except Exception as e:
+                self.logger.error(f"Error parsing or fetching workflow from {file}: {e}")
+        self.logger.info(f"Workflows fetched successfully {workflows}")
+        return workflows    

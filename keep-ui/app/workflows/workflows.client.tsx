@@ -20,6 +20,7 @@ import { Button, Card, Title } from "@tremor/react";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/ui/Modal";
+import MockWorkflowCardSection from "./mockworkflows";
 
 export default function WorkflowsPage() {
   const apiUrl = getApiURL();
@@ -32,6 +33,11 @@ export default function WorkflowsPage() {
   // Only fetch data when the user is authenticated
   const { data, error, isLoading } = useSWR<Workflow[]>(
     status === "authenticated" ? `${apiUrl}/workflows` : null,
+    (url: string) => fetcher(url, session?.accessToken!)
+  );
+
+  const { data: mockWorkflows, error:mockError, isLoading: mockLoading } = useSWR<Partial<Workflow>[]>(
+    status === "authenticated" ? `${apiUrl}/workflows/random-templates` : null,
     (url: string) => fetcher(url, session?.accessToken!)
   );
 
@@ -243,7 +249,7 @@ export default function WorkflowsPage() {
       <Card className="mt-10 p-4 md:p-10 mx-auto">
         <div>
           <div>
-            {data.length === 0 ? (
+          {data.length === 0 ? (
               <WorkflowsEmptyState />
             ) : (
               <div className="flex flex-wrap gap-2">
@@ -252,6 +258,11 @@ export default function WorkflowsPage() {
                 ))}
               </div>
             )}
+            <MockWorkflowCardSection
+              mockWorkflows={mockWorkflows}
+              mockError={mockError}
+              mockLoading={mockLoading}
+            />
           </div>
         </div>
       </Card>

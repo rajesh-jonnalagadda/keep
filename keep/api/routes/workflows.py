@@ -1,6 +1,8 @@
 import datetime
+import os
 import logging
 from typing import Any, Dict, List, Optional
+from pathlib import Path
 
 import validators
 import yaml
@@ -334,6 +336,15 @@ async def create_workflow(
             workflow_id=workflow.id, status="updated", revision=workflow.revision
         )
 
+@router.get("/random-templates", description="Get random workflow templates")
+def get_random_workflow_templates(
+    authenticated_entity: AuthenticatedEntity = Depends(AuthVerifier(["read:workflows"]))
+) -> list[dict]:
+    tenant_id = authenticated_entity.tenant_id 
+    workflowstore = WorkflowStore()
+    default_directory = os.path.join(os.path.dirname(__file__), '../../../examples/workflows')
+    workflows = workflowstore.get_random_workflow_templates(tenant_id=tenant_id, workflows_dir=default_directory, limit=6)
+    return workflows
 
 @router.put(
     "/{workflow_id}",

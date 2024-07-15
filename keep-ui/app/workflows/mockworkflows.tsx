@@ -1,0 +1,88 @@
+import React, { useState } from "react";
+import { Workflow } from './models';
+import { getApiURL } from "../../utils/apiUrl";
+import Loading from "../loading";
+import { Button } from "@tremor/react";
+import Modal from "@/components/ui/Modal";
+import PageClient from "./builder/page.client";
+import { useRouter } from "next/navigation";
+
+export default function MockWorkflowCardSection({ mockWorkflows, mockError, mockLoading }) {
+  const router = useRouter();
+
+  const getNameFromId = (id: string) => {
+    if (!id) {
+      return '';
+    }
+
+    return id.split('-').join(' ');
+  }
+
+  console.log("mockWorkflows====>", mockWorkflows);
+
+  return (
+    <section className="p-4">
+      <h2 className="text-xl sm:text-2xl font-semibold mb-6">Discover existing workflow templates</h2>
+      <div className="flex flex-col sm:flex-row justify-between mb-6 flex-wrap">
+        <div className="flex gap-2 mb-4 sm:mb-0">
+          <input
+            type="text"
+            placeholder="Search through workflow examples..."
+            className="px-4 py-2 border rounded w-full sm:w-auto"
+          />
+          <button className="px-4 py-2 bg-gray-200 border rounded">Integrations used</button>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <button className="px-4 py-2 bg-gray-200 border rounded">All workflows</button>
+          <button className="px-4 py-2 bg-gray-200 border rounded">Notifications</button>
+          <button className="px-4 py-2 bg-gray-200 border rounded">Databases</button>
+          <button className="px-4 py-2 bg-gray-200 border rounded">CI/CD</button>
+          <button className="px-4 py-2 bg-gray-200 border rounded">Other</button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {mockLoading && <Loading />}
+        {!mockLoading && mockWorkflows.length === 0 && <p>No workflows found</p>}
+        {!mockLoading && mockWorkflows.length > 0 && mockWorkflows.map((template: any, index: number) => {
+          const workflow = template.workflow;
+          return (
+            <div key={index} className="title-card p-4 border rounded bg-white flex flex-col shadow h-50">
+              <div className="flex-grow">
+                <h3 className="text-lg sm:text-xl font-semibold line-clamp-2">{workflow.name || getNameFromId(workflow.id)}</h3>
+                <p className="mt-2 text-sm sm:text-base line-clamp-3">{workflow.description}</p>
+              </div>
+              <div className="mt-auto">
+                <Button
+                  className="inline-block mt-8 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    localStorage.setItem('preview_workflow', JSON.stringify(template));
+                    router.push(`/workflows/preview/${workflow.id}`);
+                  }}
+                >
+                  Preview
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {/* <Modal
+        isOpen={isModalOpen && !!workflow}
+        onClose={() => setIsModalOpen(false)}
+        title="Test Preview Modal"
+        className="w-3/4 h-auto" // Adjust size here
+      >
+        <div className="bg-white p-4 rounded max-w-lg max-h-fit mx-auto">
+          <div className="mt-4">
+            <PageClient workflow={workflow?.workflow_raw} workflowId={workflow?.id}/>
+          </div>
+          <div className="mt-4">
+            <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+          </div>
+        </div>
+      </Modal> */}
+    </section>
+  );
+};
