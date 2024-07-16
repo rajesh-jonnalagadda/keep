@@ -1770,7 +1770,7 @@ def get_alert_audit(
         ).all()
     return audit
 
- def get_workflows_with_last_executions_v2(tenant_id: str, fetch_last_executions: int = 15) -> List[dict]:
+def get_workflows_with_last_executions_v2(tenant_id: str, fetch_last_executions: int = 15) -> list[dict]:
     if fetch_last_executions is not None and fetch_last_executions > 20:
         fetch_last_executions = 20
 
