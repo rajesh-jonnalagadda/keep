@@ -57,6 +57,7 @@ def get_workflows(
     authenticated_entity: AuthenticatedEntity = Depends(
         AuthVerifier(["read:workflows"])
     ),
+    # is_v2: Optional[bool] = Query(False, alias="is_v2", type=bool),
 ) -> list[WorkflowDTO]:
     tenant_id = authenticated_entity.tenant_id
     workflowstore = WorkflowStore()
@@ -72,9 +73,14 @@ def get_workflows(
         else:
             installed_providers_by_type[installed_provider.type][
                 installed_provider.name
-            ] = installed_provider
+            ] = installed_provider    
     # get all workflows
     workflows = workflowstore.get_all_workflows_with_last_execution(tenant_id=tenant_id)
+
+    # Group last workflow executions by workflow
+    # if is_v2:
+    #     workflows = workflowstore.group_last_workflow_executions(workflows)
+
     # iterate workflows
     for _workflow in workflows:
         # extract the providers

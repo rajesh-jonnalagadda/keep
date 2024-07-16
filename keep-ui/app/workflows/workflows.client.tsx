@@ -32,7 +32,7 @@ export default function WorkflowsPage() {
 
   // Only fetch data when the user is authenticated
   const { data, error, isLoading } = useSWR<Workflow[]>(
-    status === "authenticated" ? `${apiUrl}/workflows` : null,
+    status === "authenticated" ? `${apiUrl}/workflows?get_executions=true` : null,
     (url: string) => fetcher(url, session?.accessToken!)
   );
 
@@ -40,6 +40,9 @@ export default function WorkflowsPage() {
     status === "authenticated" ? `${apiUrl}/workflows/random-templates` : null,
     (url: string) => fetcher(url, session?.accessToken!)
   );
+
+
+  console.log("data===>", data);
 
   if (isLoading || !data) return <Loading />;
 

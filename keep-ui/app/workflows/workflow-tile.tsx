@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Workflow, Filter } from "./models";
+import { Workflow, Filter } from './models';
 import { getApiURL } from "../../utils/apiUrl";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -30,6 +30,12 @@ import "./workflow-tile.css";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import AlertTriggerModal from "./workflow-run-with-alert-modal";
 import { set } from "date-fns";
+import { Chart, CategoryScale, LinearScale, BarElement, Title as ChartTitle, Tooltip, Legend } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+import 'chart.js/auto';
+
+Chart.register(CategoryScale, LinearScale, BarElement, ChartTitle, Tooltip, Legend);
+
 
 function WorkflowMenuSection({
   onDelete,
@@ -137,9 +143,8 @@ function ProviderTile({
         width={30}
         height={30}
         alt={provider.type}
-        className={`${
-          provider.installed ? "mt-6" : "mt-6 grayscale group-hover:grayscale-0"
-        }`}
+        className={`${provider.installed ? "mt-6" : "mt-6 grayscale group-hover:grayscale-0"
+          }`}
       />
 
       <div className="h-8 w-[70px] flex justify-center">
@@ -377,13 +382,13 @@ function WorkflowTile({ workflow }: { workflow: Workflow }) {
     .filter(Boolean) as FullProvider[];
   const triggerTypes = workflow.triggers.map((trigger) => trigger.type);
   return (
-    <div className="workflow-tile-basis mt-2.5">
+    <div className="mt-2.5 flex justify-between items-center">
       {isRunning && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <Loading />
         </div>
       )}
-      <Card>
+      {/* <Card>
         <div className="flex w-full justify-between items-center h-14">
           <Title className="truncate max-w-64 text-left text-lightBlack">
             {workflow.name}
@@ -539,7 +544,62 @@ function WorkflowTile({ workflow }: { workflow: Workflow }) {
             />
           )}
         </SlidingPanel>
-      </Card>
+      </Card> */}
+      {/* <WorkflowCard workflow={workflow}/> */}
+      {/* <div className="relative flex flex-col bg-white shadow-md rounded overflow-hidden"> */}
+      {/* <Card className="p-4">
+        <div className="absolute top-0 right-0 mt-2 mr-2 mb-2 ">
+          {WorkflowMenuSection({
+            onDelete: handleDeleteClick,
+            onRun: handleRunClick,
+            onDownload: handleDownloadClick,
+            onView: handleViewClick,
+            onBuilder: handleBuilderClick,
+            workflow,
+          })}
+        </div>
+        <WorkflowGraph workflow={workflow} />
+        <div className="flex-end border-gray-200 mt-2">
+          <h2 className="text-xl truncate leading-6 font-bold">{'My amzing worflow example' || workflow?.name}</h2>
+          <div className="flex items-center w-full">
+            <button className="bg-gray-100 border border-black text-black py-2 px-4 rounded-full mx-2">
+              Interval
+            </button>
+            <button className="bg-white text-black py-2 px-4 rounded-full mx-2">
+              Trigger
+            </button>
+            <span className="ml-4 text-gray-500">4h 2mins ago</span>
+          </div>
+        </div>
+      </Card> */}
+      <Card className="p-4 relative">
+  <div className="absolute top-0 right-0 mt-2 mr-2 mb-2">
+    {WorkflowMenuSection({
+      onDelete: handleDeleteClick,
+      onRun: handleRunClick,
+      onDownload: handleDownloadClick,
+      onView: handleViewClick,
+      onBuilder: handleBuilderClick,
+      workflow,
+    })}
+  </div>
+  <WorkflowGraph workflow={workflow} />
+  <div className="flex flex-col mt-2">
+    <h2 className="text-xl truncate leading-6 font-bold mx-1">{workflow?.name || 'Unknown'}</h2>
+    <div className="flex items-center justify-between w-full whitespace-nowrap mt-2">
+      <div className="flex items-center">
+        <button className="border border-gray-200 text-black py-1 px-4 text-sm rounded-full mx-1 hover:bg-gray-100 font-bold">
+          Interval
+        </button>
+        <button className="bg-white border border-gray-200 text-black py-1 px-4 text-sm rounded-full mx-1 hover:bg-gray-100 font-bold">
+          Trigger
+        </button>
+      </div>
+      <span className="text-gray-500 text-sm">4h 2mins ago</span>
+    </div>
+  </div>
+</Card>
+
       <AlertTriggerModal
         isOpen={isAlertTriggerModalOpen}
         onClose={() => setIsAlertTriggerModalOpen(false)}
@@ -550,5 +610,335 @@ function WorkflowTile({ workflow }: { workflow: Workflow }) {
     </div>
   );
 }
+
+
+
+
+const WorkflowCard = ({ workflow }: { workflow: Workflow }) => {
+  const chartData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+    datasets: [
+      {
+        label: 'Execution Time (mins)',
+        data: [1, 3, 5, 2, 10],
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    scales: {
+      x: {
+        beginAtZero: true,
+      },
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
+  return (
+    <div className="bg-white shadow-md rounded overflow-hidden">
+      <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
+        <h3 className="text-lg leading-6 font-medium text-gray-900">{workflow?.name}</h3>
+      </div>
+      <div className="p-4">
+        <Bar data={chartData} options={chartOptions} />
+      </div>
+    </div>
+  );
+};
+
+
+// const WorkflowGraph = ({ workflow }: { workflow: Workflow }) => {
+//   const chartData = {
+//     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+//     datasets: [
+//       {
+//         label: 'Execution Time (mins)',
+//         data: [1, 3, 5, 2, 10],
+//         backgroundColor: 'rgba(255, 99, 132, 0.2)',
+//         borderColor: 'rgba(255, 99, 132, 1)',
+//         borderWidth: 1,
+//       },
+//     ],
+//   };
+
+//   const chartOptions = {
+//     scales: {
+//       x: {
+//         beginAtZero: true,
+//       },
+//       y: {
+//         beginAtZero: true,
+//       },
+//     },
+//   };
+
+//   return (
+//     <div className="p-4">
+//       <Bar data={chartData} options={chartOptions} />
+//     </div>
+//   );
+// };
+
+// const WorkflowGraph = ({ workflow }: { workflow: Workflow }) => {
+//   const chartData = {
+//     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+//     datasets: [
+//       {
+//         label: 'Execution Time (mins)',
+//         data: [0, 0, 0, 2, 10, 1, 3, 5, 2, 10, 1, 3],
+//         backgroundColor: [
+//           'rgba(75, 192, 192, 0.2)', // Green
+//           'rgba(255, 99, 132, 0.2)', // Red
+//           'rgba(75, 192, 192, 0.2)', // Green
+//           'rgba(255, 99, 132, 0.2)', // Red
+//           'rgba(75, 192, 192, 0.2)', // Green
+//         ],
+//         borderColor: [
+//           'rgba(75, 192, 192, 1)', // Green
+//           'rgba(255, 99, 132, 1)', // Red
+//           'rgba(75, 192, 192, 1)', // Green
+//           'rgba(255, 99, 132, 1)', // Red
+//           'rgba(75, 192, 192, 1)', // Green
+//         ],
+//         borderWidth: 1,
+//       },
+//     ],
+//   };
+
+//   const chartOptions = {
+//     scales: {
+//       x: {
+//         beginAtZero: true,
+//         ticks: {
+//           display: false, // Hide x-axis labels
+//         },
+//         grid: {
+//           display: false, // Hide x-axis grid lines
+//         },
+//       },
+//       y: {
+//         beginAtZero: true,
+//         ticks: {
+//           display: false, // Hide y-axis labels
+//         },
+//         grid: {
+//           display: false, // Hide y-axis grid lines
+//         },
+//       },
+//     },
+//   };
+
+//   return (
+//     <div className="py-4 px-2">
+//       <Bar data={chartData} options={chartOptions} />
+//     </div>
+//   );
+// };
+
+
+// const WorkflowGraph = ({ workflow }) => {
+//   const chartData = {
+//     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+//     datasets: [
+//       {
+//         label: 'Execution Time (mins)',
+//         data: [0, 0, 0, 2, 10, 1, 3, 5, 2, 10, 1, 3],
+//         backgroundColor: [
+//           'rgba(75, 192, 192, 0.2)', // Green
+//           'rgba(255, 99, 132, 0.2)', // Red
+//           'rgba(75, 192, 192, 0.2)', // Green
+//           'rgba(255, 99, 132, 0.2)', // Red
+//           'rgba(75, 192, 192, 0.2)', // Green
+//           'rgba(255, 99, 132, 0.2)', // Red
+//           'rgba(75, 192, 192, 0.2)', // Green
+//           'rgba(255, 99, 132, 0.2)', // Red
+//           'rgba(75, 192, 192, 0.2)', // Green
+//           'rgba(255, 99, 132, 0.2)', // Red
+//           'rgba(75, 192, 192, 0.2)', // Green
+//           'rgba(255, 99, 132, 0.2)', // Red
+//         ],
+//         borderColor: [
+//           'rgba(75, 192, 192, 1)', // Green
+//           'rgba(255, 99, 132, 1)', // Red
+//           'rgba(75, 192, 192, 1)', // Green
+//           'rgba(255, 99, 132, 1)', // Red
+//           'rgba(75, 192, 192, 1)', // Green
+//           'rgba(255, 99, 132, 1)', // Red
+//           'rgba(75, 192, 192, 1)', // Green
+//           'rgba(255, 99, 132, 1)', // Red
+//           'rgba(75, 192, 192, 1)', // Green
+//           'rgba(255, 99, 132, 1)', // Red
+//           'rgba(75, 192, 192, 1)', // Green
+//           'rgba(255, 99, 132, 1)', // Red
+//         ],
+//         borderWidth: 1,
+//         borderSkipped: false, // To apply border on all sides
+//       },
+//     ],
+//   };
+
+//   const chartOptions = {
+//     scales: {
+//       x: {
+//         beginAtZero: true,
+//         ticks: {
+//           display: false, // Hide x-axis labels
+//         },
+//         grid: {
+//           display: false, // Hide x-axis grid lines
+//         },
+//       },
+//       y: {
+//         beginAtZero: true,
+//         ticks: {
+//           display: false, // Hide y-axis labels
+//         },
+//         grid: {
+//           display: false, // Hide y-axis grid lines
+//         },
+//       },
+//     },
+//     plugins: {
+//       legend: {
+//         display: false, // Hide the legend
+//       },
+//     },
+//     responsive: true,
+//     maintainAspectRatio: false,
+//   };
+
+//   return (
+//     <div className="py-4 px-2 h-48">
+//       <Bar data={chartData} options={chartOptions} />
+//     </div>
+//   );
+// };
+
+const WorkflowGraph = ({ workflow }) => {
+  const chartData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    datasets: [
+      {
+        label: 'Execution Time (mins)',
+        data: [1, 3, 2, 2, 8, 1, 3, 5, 2, 10, 1, 3, 5, 2, 10],
+        backgroundColor: [
+          'rgba(75, 192, 192, 0.2)', // Green
+          'rgba(255, 99, 132, 0.2)', // Red
+          'rgba(75, 192, 192, 0.2)', // Green
+          'rgba(255, 99, 132, 0.2)', // Red
+          'rgba(75, 192, 192, 0.2)', // Green
+          'rgba(255, 99, 132, 0.2)', // Red
+          'rgba(75, 192, 192, 0.2)', // Green
+          'rgba(255, 99, 132, 0.2)', // Red
+          'rgba(75, 192, 192, 0.2)', // Green
+          'rgba(255, 99, 132, 0.2)', // Red
+          'rgba(75, 192, 192, 0.2)', // Green
+          'rgba(255, 99, 132, 0.2)', // Red
+          'rgba(255, 99, 132, 0.2)', // Red
+          'rgba(75, 192, 192, 0.2)', // Green
+          'rgba(255, 99, 132, 0.2)', // Red
+        ],
+        borderColor: [
+          'rgba(75, 192, 192, 1)', // Green
+          'rgba(255, 99, 132, 1)', // Red
+          'rgba(75, 192, 192, 1)', // Green
+          'rgba(255, 99, 132, 1)', // Red
+          'rgba(75, 192, 192, 1)', // Green
+          'rgba(255, 99, 132, 1)', // Red
+          'rgba(75, 192, 192, 1)', // Green
+          'rgba(255, 99, 132, 1)', // Red
+          'rgba(75, 192, 192, 1)', // Green
+          'rgba(255, 99, 132, 1)', // Red
+          'rgba(75, 192, 192, 1)', // Green
+          'rgba(255, 99, 132, 1)', // Red
+          'rgba(255, 99, 132, 1)', // Red
+          'rgba(75, 192, 192, 1)', // Green
+          'rgba(255, 99, 132, 1)', // Red
+        ],
+        borderWidth: {
+          top: 2, // Thicker top border
+          right: 0,
+          bottom: 0,
+          left: 0,
+        },
+        borderSkipped: 'bottom', // Skips border on the bottom
+      },
+    ],
+  };
+
+  const chartOptions = {
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: {
+          display: false, // Hide x-axis labels
+        },
+        grid: {
+          display: false, // Hide x-axis grid lines
+        },
+        border: {
+          display: false, // Hide x-axis border line
+        },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          display: false, // Hide y-axis labels
+        },
+        grid: {
+          display: false, // Hide y-axis grid lines
+        },
+        border: {
+          display: false, // Hide y-axis border line
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hide the legend
+      },
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+  };
+
+  const status = ['failed', 'done', 'running'];
+  const randamStatus = status[Math.floor(Math.random() * status.length)];
+  let icon = (
+    <Image
+      className="animate-bounce"
+      src="/keep.svg"
+      alt="loading"
+      width={40}
+      height={40}
+    />
+  );
+  switch (randamStatus) {
+    case 'done':
+      icon = <CheckCircleIcon className="w-6 h-6 text-green-500" />;
+      break;
+    case 'failed':
+      icon = <XCircleIcon className="w-6 h-6 text-red-500" />;
+      break;
+    default:
+      break;
+  }
+
+  return (
+    <div className="flex flex-row justify-start items-end">
+      <div className="flex items-center">{icon}</div>
+      <div className="pt-8 w-full h-32">
+        <Bar data={chartData} options={chartOptions} />
+      </div>
+    </div>
+  );
+};
+
+
 
 export default WorkflowTile;

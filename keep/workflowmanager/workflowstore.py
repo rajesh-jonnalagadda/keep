@@ -17,6 +17,7 @@ from keep.api.core.db import (
     get_raw_workflow,
     get_workflow_execution,
     get_workflows_with_last_execution,
+    get_workflows_with_last_executions_v2,
 )
 from keep.parser.parser import Parser
 from keep.workflowmanager.workflow import Workflow
@@ -125,9 +126,13 @@ class WorkflowStore:
         workflows = get_all_workflows(tenant_id)
         return workflows
 
-    def get_all_workflows_with_last_execution(self, tenant_id: str) -> list[Workflow]:
+    def get_all_workflows_with_last_execution(self, tenant_id: str, is_v2: bool = False) -> list[dict]:
         # list all tenant's workflows
-        workflows = get_workflows_with_last_execution(tenant_id)
+        if is_v2:
+            workflows = get_workflows_with_last_executions_v2(tenant_id, 15)
+        else:
+            workflows = get_workflows_with_last_execution(tenant_id)
+
         return workflows
 
     def get_all_workflows_yamls(self, tenant_id: str) -> list[str]:
@@ -226,10 +231,10 @@ class WorkflowStore:
         Args:
             tenant_id (str): The tenant to which the workflows belong.
             workflows_dir (str): A directory containing workflows yamls.
-            count (int): The number of workflows to return.
+            limit (int): The number of workflows to return.
 
         Returns:
-            List[Workflow]: A list of workflows
+            List[dict]: A list of workflows
         """
         if not os.path.isdir(workflows_dir):
             raise FileNotFoundError(f"Directory {workflows_dir} does not exist")
@@ -242,7 +247,7 @@ class WorkflowStore:
         workflows = []
         count = 0
         for file in workflow_yaml_files:
-            if(count == limit):
+            if count == limit:
                 break
             try:
                 file_path = os.path.join(workflows_dir, file)
@@ -257,4 +262,32 @@ class WorkflowStore:
             except Exception as e:
                 self.logger.error(f"Error parsing or fetching workflow from {file}: {e}")
         self.logger.info(f"Workflows fetched successfully {workflows}")
-        return workflows    
+        return workflows
+
+    def group_last_workflow_executions(self, workflow_executions: list[dict]) -> list[dict]:
+        """
+        Group last workflow executions by workflow id
+        """
+        workflow_executions_dict = {}
+        for workflow_execution in workflow_executions:
+        # extract the providers
+            workflow, workflow_id, execution_status, execution_started, execution_started   = workflow_execution
+            if workflow_id not in workflow_executions_dict:
+                workflow_executions_dict[workflow_id] = {
+                    'workflow': Workflow(workflow_dict=workflow_execution),
+                    'last_executions': []
+                }
+            workflow_executions_dict[workflow_id]['last_executions'].append({
+                'last_status': execution_status,
+                'started': execution_started,
+                'execution_time': execution_time,
+            })
+
+        workflows = [
+            {
+                'workflow': workflow,
+                'last_executions': workflow_execution_dict['last_executions']
+            } for workflow_execution_dict in workflow_executions_dict.values()
+        ]
+
+        return workflows

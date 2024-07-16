@@ -68,7 +68,7 @@ export default function MockWorkflowCardSection({ mockWorkflows, mockError, mock
   console.log("mockWorkflows====>", mockWorkflows);
 
   return (
-    <section className="p-4">
+    <section className="pt-10 mt-10">
       <h2 className="text-xl sm:text-2xl font-semibold mb-6">Discover existing workflow templates</h2>
       <div className="flex flex-col sm:flex-row justify-between mb-6 flex-wrap">
         <div className="flex gap-2 mb-4 sm:mb-0">
