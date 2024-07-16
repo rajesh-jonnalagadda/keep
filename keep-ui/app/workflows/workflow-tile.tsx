@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { Workflow, Filter } from './models';
 import { getApiURL } from "../../utils/apiUrl";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import WorkflowMenu from "./workflow-menu";
 import Loading from "../loading";
@@ -29,10 +29,12 @@ import { Provider as FullProvider } from "app/providers/providers";
 import "./workflow-tile.css";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import AlertTriggerModal from "./workflow-run-with-alert-modal";
-import { set } from "date-fns";
+import { parseISO, set } from "date-fns";
 import { Chart, CategoryScale, LinearScale, BarElement, Title as ChartTitle, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
+import TimeAgo from 'react-timeago';
+
 
 Chart.register(CategoryScale, LinearScale, BarElement, ChartTitle, Tooltip, Legend);
 
@@ -382,7 +384,7 @@ function WorkflowTile({ workflow }: { workflow: Workflow }) {
     .filter(Boolean) as FullProvider[];
   const triggerTypes = workflow.triggers.map((trigger) => trigger.type);
   return (
-    <div className="mt-2.5 flex justify-between items-center">
+    <div className="mt-2.5 flex justify-start gap-2 items-center">
       {isRunning && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <Loading />
@@ -573,32 +575,34 @@ function WorkflowTile({ workflow }: { workflow: Workflow }) {
         </div>
       </Card> */}
       <Card className="p-4 relative">
-  <div className="absolute top-0 right-0 mt-2 mr-2 mb-2">
-    {WorkflowMenuSection({
-      onDelete: handleDeleteClick,
-      onRun: handleRunClick,
-      onDownload: handleDownloadClick,
-      onView: handleViewClick,
-      onBuilder: handleBuilderClick,
-      workflow,
-    })}
-  </div>
-  <WorkflowGraph workflow={workflow} />
-  <div className="flex flex-col mt-2">
-    <h2 className="text-xl truncate leading-6 font-bold mx-1">{workflow?.name || 'Unknown'}</h2>
-    <div className="flex items-center justify-between w-full whitespace-nowrap mt-2">
-      <div className="flex items-center">
-        <button className="border border-gray-200 text-black py-1 px-4 text-sm rounded-full mx-1 hover:bg-gray-100 font-bold">
-          Interval
-        </button>
-        <button className="bg-white border border-gray-200 text-black py-1 px-4 text-sm rounded-full mx-1 hover:bg-gray-100 font-bold">
-          Trigger
-        </button>
-      </div>
-      <span className="text-gray-500 text-sm">4h 2mins ago</span>
-    </div>
-  </div>
-</Card>
+        <div className="absolute top-0 right-0 mt-2 mr-2 mb-2">
+          {WorkflowMenuSection({
+            onDelete: handleDeleteClick,
+            onRun: handleRunClick,
+            onDownload: handleDownloadClick,
+            onView: handleViewClick,
+            onBuilder: handleBuilderClick,
+            workflow,
+          })}
+        </div>
+        <WorkflowGraph workflow={workflow} />
+        <div className="flex flex-col mt-2">
+          <h2 className="text-xl truncate leading-6 font-bold mx-1">{workflow?.name || 'Unknown'}</h2>
+          <div className="flex items-center justify-between w-full whitespace-nowrap mt-2">
+            <div className="flex items-center">
+              <button className="border border-gray-200 text-black py-1 px-4 text-sm rounded-full mx-1 hover:bg-gray-100 font-bold">
+                Interval
+              </button>
+              <button className="bg-white border border-gray-200 text-black py-1 px-4 text-sm rounded-full mx-1 hover:bg-gray-100 font-bold">
+                Trigger
+              </button>
+            </div>
+            {workflow?.last_execution_started ? <TimeAgo date={parseISO(workflow?.last_execution_started)} /> : null}
+
+            {/* <span className="text-gray-500 text-sm">4h 2mins ago</span> */}
+          </div>
+        </div>
+      </Card>
 
       <AlertTriggerModal
         isOpen={isAlertTriggerModalOpen}
@@ -651,6 +655,7 @@ const WorkflowCard = ({ workflow }: { workflow: Workflow }) => {
   );
 };
 
+const show_real_data = true
 
 const demoLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const demoData = [1, 3, 2, 2, 8, 1, 3, 5, 2, 10, 1, 3, 5, 2, 10]
@@ -690,65 +695,72 @@ const demoColors = [
   'rgba(75, 192, 192, 1)', // Green
   'rgba(255, 99, 132, 1)', // Red
 ]
-const getLabels = (lastExecutions: {status: string, execution_time: number, started: string}[]) => {
-  if(!lastExecutions || (lastExecutions && lastExecutions.length === 0)){
-      return demoLabels;
-  }  
-  return lastExecutions?.map((workflowExecution)=>{
-      return workflowExecution.started
+const getLabels = (lastExecutions: { status: string, execution_time: number, started: string }[]) => {
+  if (!lastExecutions || (lastExecutions && lastExecutions.length === 0)) {
+    return show_real_data ? [] : demoLabels;
+  }
+  return lastExecutions?.map((workflowExecution) => {
+    return workflowExecution?.started
   })
 }
 
 
-const getDataValues = (lastExecutions: {status: string, execution_time: number, started: string}[]) => {
-  if(!lastExecutions || (lastExecutions && lastExecutions.length === 0)){
-    return demoData;
-}  
-  return lastExecutions?.map((workflowExecution)=>{
-      return workflowExecution.execution_time
+const getDataValues = (lastExecutions: { status: string, execution_time: number, started: string }[]) => {
+  if (!lastExecutions || (lastExecutions && lastExecutions.length === 0)) {
+    return show_real_data ? [] : demoData;
+  }
+  return lastExecutions?.map((workflowExecution) => {
+    return workflowExecution?.execution_time
   })
 }
 
 
-const getBackgroundColors = (lastExecutions: {status: string, execution_time: number, started: string}[]) => {
-  if(!lastExecutions || (lastExecutions && lastExecutions.length === 0)){
-    return demoBgColors;
-}  
-  return lastExecutions?.map(({status})=>{
-    status = status.toLowerCase()
-      if(status === "success"){
-        return "rgba(75, 192, 192, 0.2)"
-      }
-      if(['failed', 'faliure'].includes(status)){
-        return 'rgba(255, 99, 132, 0.2)'
-      }
-
+const getBackgroundColors = (lastExecutions: { status: string, execution_time: number, started: string }[]) => {
+  if (!lastExecutions || (lastExecutions && lastExecutions.length === 0)) {
+    return show_real_data ? [] : demoBgColors;
+  }
+  return lastExecutions?.map((workflowExecution) => {
+    const status = workflowExecution?.status?.toLowerCase()
+    if (status === "success") {
       return "rgba(75, 192, 192, 0.2)"
+    }
+    if (['failed', 'faliure'].includes(status)) {
+      return 'rgba(255, 99, 132, 0.2)'
+    }
+
+    return "rgba(75, 192, 192, 0.2)"
   })
 }
 
-const getBorderColors = (lastExecutions: {status: string, execution_time: number, started: string}[]) => {
-  if(!lastExecutions || (lastExecutions && lastExecutions.length === 0)){
-    return demoColors;
-}  
-  
-    return lastExecutions?.map(({status})=>{
-        status = status.toLowerCase()
-        if(status === "success"){
-            return "rgba(75, 192, 192, 1)"
-          }
-          if(['failed', 'faliure'].includes(status)){
-            return 'rgba(255, 99, 132, 1)'
-          }
-  
-          return "rgba(75, 192, 192, 1)"
-    })
+const getBorderColors = (lastExecutions: { status: string, execution_time: number, started: string }[]) => {
+  if (!lastExecutions || (lastExecutions && lastExecutions.length === 0)) {
+    return show_real_data ? [] : demoColors;
+  }
+
+  return lastExecutions?.map((workflowExecution) => {
+    const status = workflowExecution?.status?.toLowerCase()
+    if (status === "success") {
+      return "rgba(75, 192, 192, 1)"
+    }
+    if (['failed', 'faliure', 'fail'].includes(status)) {
+      return 'rgba(255, 99, 132, 1)'
+    }
+
+    return "rgba(75, 192, 192, 1)"
+  })
 }
 
 
 const WorkflowGraph = ({ workflow }) => {
 
-  const lastExecutions = workflow?.last_executions?.reverse()?.slice(0, 15) || null;
+  const lastExecutions = useMemo(() => {
+    // Reverse the array only once when it's fetched
+    const reversedExecutions = workflow?.last_executions?.slice(0, 15) || [];
+    return reversedExecutions.reverse();
+  }, [workflow?.last_executions]); // Depend on workflow?.last_executions for change detection
+
+  // Memoize the padded executions to prevent unnecessary recomputation
+  const hasNoData = !lastExecutions || lastExecutions.length === 0;
 
   const chartData = {
     labels: getLabels(lastExecutions),
@@ -765,6 +777,7 @@ const WorkflowGraph = ({ workflow }) => {
           left: 0,
         },
         borderSkipped: 'bottom', // Skips border on the bottom
+        categoryPercentage: 0.4,
       },
     ],
   };
@@ -817,10 +830,12 @@ const WorkflowGraph = ({ workflow }) => {
     />
   );
   switch (status) {
-    case 'done':
+    case 'success':
       icon = <CheckCircleIcon className="w-6 h-6 text-green-500" />;
       break;
     case 'failed':
+    case 'fail':
+    case 'failure':
       icon = <XCircleIcon className="w-6 h-6 text-red-500" />;
       break;
     default:
@@ -828,10 +843,16 @@ const WorkflowGraph = ({ workflow }) => {
   }
 
   return (
-    <div className="flex flex-row justify-start items-end">
-      <div className="flex items-center">{icon}</div>
+    <div className="flex flex-row justify-start items-end w-full">
+      {!hasNoData || !show_real_data && <div className="flex items-center">{icon}</div>}
       <div className="pt-8 w-full h-32">
-        <Bar data={chartData} options={chartOptions} />
+        {hasNoData && show_real_data ? (
+          <div className="flex justify-center items-center h-full text-gray-400">
+            No data available
+          </div>
+        ) : (
+          <Bar data={chartData} options={chartOptions} />
+        )}
       </div>
     </div>
   );

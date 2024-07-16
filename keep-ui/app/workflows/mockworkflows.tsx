@@ -117,21 +117,6 @@ export default function MockWorkflowCardSection({ mockWorkflows, mockError, mock
           );
         })}
       </div>
-      {/* <Modal
-        isOpen={isModalOpen && !!workflow}
-        onClose={() => setIsModalOpen(false)}
-        title="Test Preview Modal"
-        className="w-3/4 h-auto" // Adjust size here
-      >
-        <div className="bg-white p-4 rounded max-w-lg max-h-fit mx-auto">
-          <div className="mt-4">
-            <PageClient workflow={workflow?.workflow_raw} workflowId={workflow?.id}/>
-          </div>
-          <div className="mt-4">
-            <button onClick={() => setIsModalOpen(false)}>Cancel</button>
-          </div>
-        </div>
-      </Modal> */}
     </section>
   );
 };
