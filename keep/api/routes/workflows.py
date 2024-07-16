@@ -57,8 +57,8 @@ def get_workflows(
     authenticated_entity: AuthenticatedEntity = Depends(
         AuthVerifier(["read:workflows"])
     ),
-    # is_v2: Optional[bool] = Query(False, alias="is_v2", type=bool),
-) -> list[WorkflowDTO]:
+    is_v2: Optional[bool] = Query(False, alias="is_v2", type=bool),
+) -> list[WorkflowDTO] | list[dict]:
     tenant_id = authenticated_entity.tenant_id
     workflowstore = WorkflowStore()
     parser = Parser()
@@ -75,16 +75,26 @@ def get_workflows(
                 installed_provider.name
             ] = installed_provider    
     # get all workflows
-    workflows = workflowstore.get_all_workflows_with_last_execution(tenant_id=tenant_id)
+    workflows = workflowstore.get_all_workflows_with_last_execution(tenant_id=tenant_id, is_v2=is_v2)
 
     # Group last workflow executions by workflow
-    # if is_v2:
-    #     workflows = workflowstore.group_last_workflow_executions(workflows)
+    if is_v2:
+        workflows= workflowstore.group_last_workflow_executions(workflows=workflows)
 
     # iterate workflows
     for _workflow in workflows:
         # extract the providers
-        workflow, workflow_last_run_time, workflow_last_run_status = _workflow
+        if is_v2:
+           workflow = _workflow['workflow']
+           workflow_last_run_time = _workflow['workflow_last_run_time']
+           workflow_last_run_status = _workflow['workflow_last_run_status']
+           last_executions = _workflow['workflow_last_executions']
+           last_execution_started = _workflow['workflow_last_run_started']
+        else:    
+            workflow, workflow_last_run_time, workflow_last_run_status = _workflow
+            last_executions = None
+            last_execution_started=None
+
         try:
             workflow_yaml = yaml.safe_load(workflow.workflow_raw)
             providers = parser.get_providers_from_workflow(workflow_yaml)
@@ -152,6 +162,8 @@ def get_workflows(
             workflow_raw=workflow.workflow_raw,
             revision=workflow.revision,
             last_updated=workflow.last_updated,
+            last_executions=last_executions,
+            last_execution_started=last_execution_started
         )
         workflows_dto.append(workflow_dto)
     return workflows_dto

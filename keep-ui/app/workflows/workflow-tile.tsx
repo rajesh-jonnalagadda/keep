@@ -652,214 +652,112 @@ const WorkflowCard = ({ workflow }: { workflow: Workflow }) => {
 };
 
 
-// const WorkflowGraph = ({ workflow }: { workflow: Workflow }) => {
-//   const chartData = {
-//     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-//     datasets: [
-//       {
-//         label: 'Execution Time (mins)',
-//         data: [1, 3, 5, 2, 10],
-//         backgroundColor: 'rgba(255, 99, 132, 0.2)',
-//         borderColor: 'rgba(255, 99, 132, 1)',
-//         borderWidth: 1,
-//       },
-//     ],
-//   };
+const demoLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const demoData = [1, 3, 2, 2, 8, 1, 3, 5, 2, 10, 1, 3, 5, 2, 10]
 
-//   const chartOptions = {
-//     scales: {
-//       x: {
-//         beginAtZero: true,
-//       },
-//       y: {
-//         beginAtZero: true,
-//       },
-//     },
-//   };
+const demoBgColors = [
+  'rgba(75, 192, 192, 0.2)', // Green
+  'rgba(255, 99, 132, 0.2)', // Red
+  'rgba(75, 192, 192, 0.2)', // Green
+  'rgba(255, 99, 132, 0.2)', // Red
+  'rgba(75, 192, 192, 0.2)', // Green
+  'rgba(255, 99, 132, 0.2)', // Red
+  'rgba(75, 192, 192, 0.2)', // Green
+  'rgba(255, 99, 132, 0.2)', // Red
+  'rgba(75, 192, 192, 0.2)', // Green
+  'rgba(255, 99, 132, 0.2)', // Red
+  'rgba(75, 192, 192, 0.2)', // Green
+  'rgba(255, 99, 132, 0.2)', // Red
+  'rgba(255, 99, 132, 0.2)', // Red
+  'rgba(75, 192, 192, 0.2)', // Green
+  'rgba(255, 99, 132, 0.2)', // Red
+]
 
-//   return (
-//     <div className="p-4">
-//       <Bar data={chartData} options={chartOptions} />
-//     </div>
-//   );
-// };
-
-// const WorkflowGraph = ({ workflow }: { workflow: Workflow }) => {
-//   const chartData = {
-//     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-//     datasets: [
-//       {
-//         label: 'Execution Time (mins)',
-//         data: [0, 0, 0, 2, 10, 1, 3, 5, 2, 10, 1, 3],
-//         backgroundColor: [
-//           'rgba(75, 192, 192, 0.2)', // Green
-//           'rgba(255, 99, 132, 0.2)', // Red
-//           'rgba(75, 192, 192, 0.2)', // Green
-//           'rgba(255, 99, 132, 0.2)', // Red
-//           'rgba(75, 192, 192, 0.2)', // Green
-//         ],
-//         borderColor: [
-//           'rgba(75, 192, 192, 1)', // Green
-//           'rgba(255, 99, 132, 1)', // Red
-//           'rgba(75, 192, 192, 1)', // Green
-//           'rgba(255, 99, 132, 1)', // Red
-//           'rgba(75, 192, 192, 1)', // Green
-//         ],
-//         borderWidth: 1,
-//       },
-//     ],
-//   };
-
-//   const chartOptions = {
-//     scales: {
-//       x: {
-//         beginAtZero: true,
-//         ticks: {
-//           display: false, // Hide x-axis labels
-//         },
-//         grid: {
-//           display: false, // Hide x-axis grid lines
-//         },
-//       },
-//       y: {
-//         beginAtZero: true,
-//         ticks: {
-//           display: false, // Hide y-axis labels
-//         },
-//         grid: {
-//           display: false, // Hide y-axis grid lines
-//         },
-//       },
-//     },
-//   };
-
-//   return (
-//     <div className="py-4 px-2">
-//       <Bar data={chartData} options={chartOptions} />
-//     </div>
-//   );
-// };
+const demoColors = [
+  'rgba(75, 192, 192, 1)', // Green
+  'rgba(255, 99, 132, 1)', // Red
+  'rgba(75, 192, 192, 1)', // Green
+  'rgba(255, 99, 132, 1)', // Red
+  'rgba(75, 192, 192, 1)', // Green
+  'rgba(255, 99, 132, 1)', // Red
+  'rgba(75, 192, 192, 1)', // Green
+  'rgba(255, 99, 132, 1)', // Red
+  'rgba(75, 192, 192, 1)', // Green
+  'rgba(255, 99, 132, 1)', // Red
+  'rgba(75, 192, 192, 1)', // Green
+  'rgba(255, 99, 132, 1)', // Red
+  'rgba(255, 99, 132, 1)', // Red
+  'rgba(75, 192, 192, 1)', // Green
+  'rgba(255, 99, 132, 1)', // Red
+]
+const getLabels = (lastExecutions: {status: string, execution_time: number, started: string}[]) => {
+  if(!lastExecutions || (lastExecutions && lastExecutions.length === 0)){
+      return demoLabels;
+  }  
+  return lastExecutions?.map((workflowExecution)=>{
+      return workflowExecution.started
+  })
+}
 
 
-// const WorkflowGraph = ({ workflow }) => {
-//   const chartData = {
-//     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-//     datasets: [
-//       {
-//         label: 'Execution Time (mins)',
-//         data: [0, 0, 0, 2, 10, 1, 3, 5, 2, 10, 1, 3],
-//         backgroundColor: [
-//           'rgba(75, 192, 192, 0.2)', // Green
-//           'rgba(255, 99, 132, 0.2)', // Red
-//           'rgba(75, 192, 192, 0.2)', // Green
-//           'rgba(255, 99, 132, 0.2)', // Red
-//           'rgba(75, 192, 192, 0.2)', // Green
-//           'rgba(255, 99, 132, 0.2)', // Red
-//           'rgba(75, 192, 192, 0.2)', // Green
-//           'rgba(255, 99, 132, 0.2)', // Red
-//           'rgba(75, 192, 192, 0.2)', // Green
-//           'rgba(255, 99, 132, 0.2)', // Red
-//           'rgba(75, 192, 192, 0.2)', // Green
-//           'rgba(255, 99, 132, 0.2)', // Red
-//         ],
-//         borderColor: [
-//           'rgba(75, 192, 192, 1)', // Green
-//           'rgba(255, 99, 132, 1)', // Red
-//           'rgba(75, 192, 192, 1)', // Green
-//           'rgba(255, 99, 132, 1)', // Red
-//           'rgba(75, 192, 192, 1)', // Green
-//           'rgba(255, 99, 132, 1)', // Red
-//           'rgba(75, 192, 192, 1)', // Green
-//           'rgba(255, 99, 132, 1)', // Red
-//           'rgba(75, 192, 192, 1)', // Green
-//           'rgba(255, 99, 132, 1)', // Red
-//           'rgba(75, 192, 192, 1)', // Green
-//           'rgba(255, 99, 132, 1)', // Red
-//         ],
-//         borderWidth: 1,
-//         borderSkipped: false, // To apply border on all sides
-//       },
-//     ],
-//   };
+const getDataValues = (lastExecutions: {status: string, execution_time: number, started: string}[]) => {
+  if(!lastExecutions || (lastExecutions && lastExecutions.length === 0)){
+    return demoData;
+}  
+  return lastExecutions?.map((workflowExecution)=>{
+      return workflowExecution.execution_time
+  })
+}
 
-//   const chartOptions = {
-//     scales: {
-//       x: {
-//         beginAtZero: true,
-//         ticks: {
-//           display: false, // Hide x-axis labels
-//         },
-//         grid: {
-//           display: false, // Hide x-axis grid lines
-//         },
-//       },
-//       y: {
-//         beginAtZero: true,
-//         ticks: {
-//           display: false, // Hide y-axis labels
-//         },
-//         grid: {
-//           display: false, // Hide y-axis grid lines
-//         },
-//       },
-//     },
-//     plugins: {
-//       legend: {
-//         display: false, // Hide the legend
-//       },
-//     },
-//     responsive: true,
-//     maintainAspectRatio: false,
-//   };
 
-//   return (
-//     <div className="py-4 px-2 h-48">
-//       <Bar data={chartData} options={chartOptions} />
-//     </div>
-//   );
-// };
+const getBackgroundColors = (lastExecutions: {status: string, execution_time: number, started: string}[]) => {
+  if(!lastExecutions || (lastExecutions && lastExecutions.length === 0)){
+    return demoBgColors;
+}  
+  return lastExecutions?.map(({status})=>{
+    status = status.toLowerCase()
+      if(status === "success"){
+        return "rgba(75, 192, 192, 0.2)"
+      }
+      if(['failed', 'faliure'].includes(status)){
+        return 'rgba(255, 99, 132, 0.2)'
+      }
+
+      return "rgba(75, 192, 192, 0.2)"
+  })
+}
+
+const getBorderColors = (lastExecutions: {status: string, execution_time: number, started: string}[]) => {
+  if(!lastExecutions || (lastExecutions && lastExecutions.length === 0)){
+    return demoColors;
+}  
+  
+    return lastExecutions?.map(({status})=>{
+        status = status.toLowerCase()
+        if(status === "success"){
+            return "rgba(75, 192, 192, 1)"
+          }
+          if(['failed', 'faliure'].includes(status)){
+            return 'rgba(255, 99, 132, 1)'
+          }
+  
+          return "rgba(75, 192, 192, 1)"
+    })
+}
+
 
 const WorkflowGraph = ({ workflow }) => {
+
+  const lastExecutions = workflow?.last_executions?.reverse()?.slice(0, 15) || null;
+
   const chartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    labels: getLabels(lastExecutions),
     datasets: [
       {
         label: 'Execution Time (mins)',
-        data: [1, 3, 2, 2, 8, 1, 3, 5, 2, 10, 1, 3, 5, 2, 10],
-        backgroundColor: [
-          'rgba(75, 192, 192, 0.2)', // Green
-          'rgba(255, 99, 132, 0.2)', // Red
-          'rgba(75, 192, 192, 0.2)', // Green
-          'rgba(255, 99, 132, 0.2)', // Red
-          'rgba(75, 192, 192, 0.2)', // Green
-          'rgba(255, 99, 132, 0.2)', // Red
-          'rgba(75, 192, 192, 0.2)', // Green
-          'rgba(255, 99, 132, 0.2)', // Red
-          'rgba(75, 192, 192, 0.2)', // Green
-          'rgba(255, 99, 132, 0.2)', // Red
-          'rgba(75, 192, 192, 0.2)', // Green
-          'rgba(255, 99, 132, 0.2)', // Red
-          'rgba(255, 99, 132, 0.2)', // Red
-          'rgba(75, 192, 192, 0.2)', // Green
-          'rgba(255, 99, 132, 0.2)', // Red
-        ],
-        borderColor: [
-          'rgba(75, 192, 192, 1)', // Green
-          'rgba(255, 99, 132, 1)', // Red
-          'rgba(75, 192, 192, 1)', // Green
-          'rgba(255, 99, 132, 1)', // Red
-          'rgba(75, 192, 192, 1)', // Green
-          'rgba(255, 99, 132, 1)', // Red
-          'rgba(75, 192, 192, 1)', // Green
-          'rgba(255, 99, 132, 1)', // Red
-          'rgba(75, 192, 192, 1)', // Green
-          'rgba(255, 99, 132, 1)', // Red
-          'rgba(75, 192, 192, 1)', // Green
-          'rgba(255, 99, 132, 1)', // Red
-          'rgba(255, 99, 132, 1)', // Red
-          'rgba(75, 192, 192, 1)', // Green
-          'rgba(255, 99, 132, 1)', // Red
-        ],
+        data: getDataValues(lastExecutions),
+        backgroundColor: getBackgroundColors(lastExecutions),
+        borderColor: getBorderColors(lastExecutions),
         borderWidth: {
           top: 2, // Thicker top border
           right: 0,
@@ -907,8 +805,8 @@ const WorkflowGraph = ({ workflow }) => {
     maintainAspectRatio: false,
   };
 
-  const status = ['failed', 'done', 'running'];
-  const randamStatus = status[Math.floor(Math.random() * status.length)];
+  const status = workflow?.last_execution_status?.toLowerCase() || null;
+
   let icon = (
     <Image
       className="animate-bounce"
@@ -918,7 +816,7 @@ const WorkflowGraph = ({ workflow }) => {
       height={40}
     />
   );
-  switch (randamStatus) {
+  switch (status) {
     case 'done':
       icon = <CheckCircleIcon className="w-6 h-6 text-green-500" />;
       break;

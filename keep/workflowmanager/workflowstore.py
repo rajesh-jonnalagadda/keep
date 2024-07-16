@@ -264,30 +264,52 @@ class WorkflowStore:
         self.logger.info(f"Workflows fetched successfully {workflows}")
         return workflows
 
-    def group_last_workflow_executions(self, workflow_executions: list[dict]) -> list[dict]:
+    def group_last_workflow_executions(self, workflows: list[dict]) -> list[dict]:
         """
         Group last workflow executions by workflow id
         """
-        workflow_executions_dict = {}
-        for workflow_execution in workflow_executions:
-        # extract the providers
-            workflow, workflow_id, execution_status, execution_started, execution_started   = workflow_execution
-            if workflow_id not in workflow_executions_dict:
-                workflow_executions_dict[workflow_id] = {
-                    'workflow': Workflow(workflow_dict=workflow_execution),
-                    'last_executions': []
-                }
-            workflow_executions_dict[workflow_id]['last_executions'].append({
-                'last_status': execution_status,
-                'started': execution_started,
-                'execution_time': execution_time,
-            })
 
-        workflows = [
+        self.logger.info(f"workflow_executions: {workflows}")
+        workflow_dict = {}
+        for item in workflows:
+            workflow,started,execution_time,status = item
+            workflow_id = workflow.id
+
+            # Initialize the workflow if not already in the dictionary
+            if workflow_id not in workflow_dict:
+                workflow_dict[workflow_id] = {
+                    "workflow": workflow,
+                    "workflow_last_run_started": None,
+                    "workflow_last_run_time": None,
+                    "workflow_last_run_status": None,
+                    "workflow_last_executions": []
+                }
+
+            # Update the latest execution details if available
+            if workflow_dict[workflow_id]["workflow_last_run_started"] is not None :
+                workflow_dict[workflow_id]["workflow_last_run_status"] = status
+                workflow_dict[workflow_id]["workflow_last_run_time"] = execution_time
+                workflow_dict[workflow_id]["workflow_last_run_started"] = started
+
+            # Add the execution to the list of executions
+            if started is not None:
+                workflow_dict[workflow_id]["workflow_last_executions"].append(
+                    {
+                        "status": status,
+                        "execution_time": execution_time,
+                        "started": started
+                    }
+                )
+        # Convert the dictionary to a list of results
+        results = [
             {
-                'workflow': workflow,
-                'last_executions': workflow_execution_dict['last_executions']
-            } for workflow_execution_dict in workflow_executions_dict.values()
+                "workflow": workflow_info["workflow"],
+                "workflow_last_run_status": workflow_info["workflow_last_run_status"],
+                "workflow_last_run_time": workflow_info["workflow_last_run_time"],
+                "workflow_last_run_started": workflow_info["workflow_last_run_started"],
+                "workflow_last_executions": workflow_info["workflow_last_executions"]
+            }
+            for workflow_id, workflow_info in workflow_dict.items()
         ]
 
-        return workflows
+        return results
