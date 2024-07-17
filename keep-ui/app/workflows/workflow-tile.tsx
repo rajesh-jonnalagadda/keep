@@ -384,197 +384,13 @@ function WorkflowTile({ workflow }: { workflow: Workflow }) {
     .filter(Boolean) as FullProvider[];
   const triggerTypes = workflow.triggers.map((trigger) => trigger.type);
   return (
-    <div className="mt-2.5 flex justify-start gap-2 items-center">
+    <div className="mt-2.5 flex flex-wrap gap-4 items-start">
       {isRunning && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <Loading />
         </div>
       )}
-      {/* <Card>
-        <div className="flex w-full justify-between items-center h-14">
-          <Title className="truncate max-w-64 text-left text-lightBlack">
-            {workflow.name}
-          </Title>
-          {WorkflowMenuSection({
-            onDelete: handleDeleteClick,
-            onRun: handleRunClick,
-            onDownload: handleDownloadClick,
-            onView: handleViewClick,
-            onBuilder: handleBuilderClick,
-            workflow,
-          })}
-        </div>
-
-        <div className="flex items-center justify-between h-10">
-          <Text className="truncate max-w-sm text-left text-lightBlack">
-            {workflow.description}
-          </Text>
-        </div>
-
-        <List>
-          <ListItem>
-            <span>Created By</span>
-            <span className="text-right">{workflow.created_by}</span>
-          </ListItem>
-          <ListItem>
-            <span>Created At</span>
-            <span className="text-right">
-              {workflow.creation_time
-                ? new Date(workflow.creation_time + "Z").toLocaleString()
-                : "N/A"}
-            </span>
-          </ListItem>
-          <ListItem>
-            <span>Last Updated</span>
-            <span className="text-right">
-              {workflow.last_updated
-                ? new Date(workflow.last_updated + "Z").toLocaleString()
-                : "N/A"}
-            </span>
-          </ListItem>
-          <ListItem>
-            <span>Last Execution</span>
-            <span className="text-right">
-              {workflow.last_execution_time
-                ? new Date(workflow.last_execution_time + "Z").toLocaleString()
-                : "N/A"}
-            </span>
-          </ListItem>
-          <ListItem>
-            <span>Last Status</span>
-            <span className="text-right">
-              {workflow.last_execution_status
-                ? workflow.last_execution_status
-                : "N/A"}
-            </span>
-          </ListItem>
-        </List>
-
-        <Accordion className="mt-2.5">
-          <AccordionHeader>
-            <span className="mr-1">Triggers:</span>
-            {triggerTypes.map((t) => {
-              if (t === "alert") {
-                const handleImageError = (event: any) => {
-                  event.target.href.baseVal = "/icons/keep-icon.png";
-                };
-                const alertSource = workflow.triggers
-                  .find((w) => w.type === "alert")
-                  ?.filters?.find((f) => f.key === "source")?.value;
-                const DynamicIcon = (props: any) => (
-                  <svg
-                    width="24px"
-                    height="24px"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    {...props}
-                  >
-                    {" "}
-                    <image
-                      id="image0"
-                      width={"24"}
-                      height={"24"}
-                      href={`/icons/${alertSource}-icon.png`}
-                      onError={handleImageError}
-                    />
-                  </svg>
-                );
-                return (
-                  <Badge
-                    icon={DynamicIcon}
-                    key={t}
-                    size="xs"
-                    color="orange"
-                    title={`Source: ${alertSource}`}
-                  >
-                    {t}
-                  </Badge>
-                );
-              }
-              return (
-                <Badge key={t} size="xs" color="orange">
-                  {t}
-                </Badge>
-              );
-            })}
-          </AccordionHeader>
-          <AccordionBody>
-            {workflow.triggers.length > 0 ? (
-              <List>
-                {workflow.triggers.map((trigger, index) => (
-                  <TriggerTile key={index} trigger={trigger} />
-                ))}
-              </List>
-            ) : (
-              <p className="text-xs text-center mx-4 mt-5 text-tremor-content dark:text-dark-tremor-content">
-                This workflow does not have any triggers.
-              </p>
-            )}
-          </AccordionBody>
-        </Accordion>
-
-        <Card className="mt-2.5">
-          <Text>Providers:</Text>
-          <div className="flex flex-wrap justify-start">
-            {uniqueProviders.map((provider) => (
-              <ProviderTile
-                key={provider.id}
-                provider={provider}
-                onConnectClick={handleConnectProvider}
-              />
-            ))}
-          </div>
-        </Card>
-        <SlidingPanel
-          type={"right"}
-          isOpen={openPanel}
-          size={30}
-          backdropClicked={handleCloseModal}
-          panelContainerClassName="bg-white z-[2000]"
-        >
-          {selectedProvider && (
-            <ProviderForm
-              provider={selectedProvider}
-              formData={formValues}
-              formErrorsData={formErrors}
-              onFormChange={handleFormChange}
-              onConnectChange={handleConnecting}
-              closeModal={handleCloseModal}
-              installedProvidersMode={selectedProvider.installed}
-              isProviderNameDisabled={true}
-            />
-          )}
-        </SlidingPanel>
-      </Card> */}
-      {/* <WorkflowCard workflow={workflow}/> */}
-      {/* <div className="relative flex flex-col bg-white shadow-md rounded overflow-hidden"> */}
-      {/* <Card className="p-4">
-        <div className="absolute top-0 right-0 mt-2 mr-2 mb-2 ">
-          {WorkflowMenuSection({
-            onDelete: handleDeleteClick,
-            onRun: handleRunClick,
-            onDownload: handleDownloadClick,
-            onView: handleViewClick,
-            onBuilder: handleBuilderClick,
-            workflow,
-          })}
-        </div>
-        <WorkflowGraph workflow={workflow} />
-        <div className="flex-end border-gray-200 mt-2">
-          <h2 className="text-xl truncate leading-6 font-bold">{'My amzing worflow example' || workflow?.name}</h2>
-          <div className="flex items-center w-full">
-            <button className="bg-gray-100 border border-black text-black py-2 px-4 rounded-full mx-2">
-              Interval
-            </button>
-            <button className="bg-white text-black py-2 px-4 rounded-full mx-2">
-              Trigger
-            </button>
-            <span className="ml-4 text-gray-500">4h 2mins ago</span>
-          </div>
-        </div>
-      </Card> */}
-      <Card className="p-4 relative">
+      {/* <div className="relative flex flex-col bg-white rounded overflow-hidden shadow w-full lg:max-w-md">
         <div className="absolute top-0 right-0 mt-2 mr-2 mb-2">
           {WorkflowMenuSection({
             onDelete: handleDeleteClick,
@@ -585,24 +401,62 @@ function WorkflowTile({ workflow }: { workflow: Workflow }) {
             workflow,
           })}
         </div>
-        <WorkflowGraph workflow={workflow} />
-        <div className="flex flex-col mt-2">
-          <h2 className="text-xl truncate leading-6 font-bold mx-1">{workflow?.name || 'Unknown'}</h2>
-          <div className="flex items-center justify-between w-full whitespace-nowrap mt-2">
-            <div className="flex items-center">
-              <button className="border border-gray-200 text-black py-1 px-4 text-sm rounded-full mx-1 hover:bg-gray-100 font-bold">
-                Interval
-              </button>
-              <button className="bg-white border border-gray-200 text-black py-1 px-4 text-sm rounded-full mx-1 hover:bg-gray-100 font-bold">
-                Trigger
-              </button>
+        <div className="m-4">
+          <WorkflowGraph workflow={workflow} />
+          <div className="flex flex-col mt-2 gap-2">
+            <h2 className="truncate leading-6 font-bold text-base md:text-lg lg:text-xl">{workflow?.name || 'Unknown'}{'testing the flow with large text'}</h2>
+            <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-2">
+              <div className="flex flex-wrap justify-start items-center gap-2">
+                <button className="border border-gray-200 text-black py-1 px-4 text-sm rounded-full hover:bg-gray-100 font-bold">
+                  Interval
+                </button>
+                <button className="bg-white border border-gray-200 text-black py-1 px-4 text-sm rounded-full hover:bg-gray-100 font-bold">
+                  Trigger
+                </button>
+              </div>
+              {workflow?.last_execution_started ? (
+                <TimeAgo date={parseISO(workflow?.last_execution_started)} className="text-sm text-gray-500" />
+              ) : null
+              //  (
+              //   <div className="text-gray-500 text-sm"></div>
+              // )
+              }
             </div>
-            {workflow?.last_execution_started ? <TimeAgo date={parseISO(workflow?.last_execution_started)} /> : null}
-
-            {/* <span className="text-gray-500 text-sm">4h 2mins ago</span> */}
           </div>
         </div>
-      </Card>
+      </div> */}
+      <div className="relative flex flex-col bg-white rounded overflow-hidden shadow w-full lg:max-w-md">
+        <div className="absolute top-0 right-0 mt-2 mr-2 mb-2">
+          {WorkflowMenuSection({
+            onDelete: handleDeleteClick,
+            onRun: handleRunClick,
+            onDownload: handleDownloadClick,
+            onView: handleViewClick,
+            onBuilder: handleBuilderClick,
+            workflow,
+          })}
+        </div>
+        <div className="m-4">
+          <WorkflowGraph workflow={workflow} />
+          <div className="flex flex-col mt-2 gap-2">
+            <h2 className="truncate leading-6 font-bold text-base md:text-lg lg:text-xl">{workflow?.name || 'Unknown'}</h2>
+            <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-2">
+              <div className="flex flex-wrap justify-start items-center gap-1.5">
+                <button className="border border-gray-200 text-black py-1 px-3 text-xs rounded-full hover:bg-gray-100 font-bold">
+                  Interval
+                </button>
+                <button className="bg-white border border-gray-200 text-black py-1 px-3 text-xs rounded-full hover:bg-gray-100 font-bold">
+                  Trigger
+                </button>
+              </div>
+              {workflow?.last_execution_started ? (
+                <TimeAgo date={parseISO(workflow?.last_execution_started)} className="text-sm text-gray-500" />
+              ) : null
+              }
+            </div>
+          </div>
+        </div>
+      </div>
 
       <AlertTriggerModal
         isOpen={isAlertTriggerModalOpen}
@@ -615,45 +469,6 @@ function WorkflowTile({ workflow }: { workflow: Workflow }) {
   );
 }
 
-
-
-
-const WorkflowCard = ({ workflow }: { workflow: Workflow }) => {
-  const chartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-    datasets: [
-      {
-        label: 'Execution Time (mins)',
-        data: [1, 3, 5, 2, 10],
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    scales: {
-      x: {
-        beginAtZero: true,
-      },
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
-
-  return (
-    <div className="bg-white shadow-md rounded overflow-hidden">
-      <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">{workflow?.name}</h3>
-      </div>
-      <div className="p-4">
-        <Bar data={chartData} options={chartOptions} />
-      </div>
-    </div>
-  );
-};
 
 const show_real_data = true
 
@@ -750,34 +565,30 @@ const getBorderColors = (lastExecutions: { status: string, execution_time: numbe
   })
 }
 
-
 const WorkflowGraph = ({ workflow }) => {
-
   const lastExecutions = useMemo(() => {
-    // Reverse the array only once when it's fetched
     const reversedExecutions = workflow?.last_executions?.slice(0, 15) || [];
     return reversedExecutions.reverse();
-  }, [workflow?.last_executions]); // Depend on workflow?.last_executions for change detection
+  }, [workflow?.last_executions]);
 
-  // Memoize the padded executions to prevent unnecessary recomputation
   const hasNoData = !lastExecutions || lastExecutions.length === 0;
 
   const chartData = {
     labels: getLabels(lastExecutions),
     datasets: [
       {
-        label: 'Execution Time (mins)',
+        label: "Execution Time (mins)",
         data: getDataValues(lastExecutions),
         backgroundColor: getBackgroundColors(lastExecutions),
         borderColor: getBorderColors(lastExecutions),
         borderWidth: {
-          top: 2, // Thicker top border
-          right: 0,
-          bottom: 0,
-          left: 0,
-        },
-        borderSkipped: 'bottom', // Skips border on the bottom
-        categoryPercentage: 0.4,
+                    top: 2,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                  },
+        barPercentage: 0.6, // Adjust this value to control bar width
+                // categoryPercentage: 0.8, // Adjust this value to control space between bars
       },
     ],
   };
@@ -787,35 +598,37 @@ const WorkflowGraph = ({ workflow }) => {
       x: {
         beginAtZero: true,
         ticks: {
-          display: false, // Hide x-axis labels
+          display: false,
         },
         grid: {
-          display: false, // Hide x-axis grid lines
+          display: false,
         },
         border: {
-          display: false, // Hide x-axis border line
+          display: false,
         },
       },
       y: {
         beginAtZero: true,
         ticks: {
-          display: false, // Hide y-axis labels
+          display: false,
         },
         grid: {
-          display: false, // Hide y-axis grid lines
+          display: false,
         },
         border: {
-          display: false, // Hide y-axis border line
+          display: false,
         },
       },
     },
     plugins: {
       legend: {
-        display: false, // Hide the legend
+        display: false,
       },
     },
     responsive: true,
     maintainAspectRatio: false,
+    barPercentage: 0.7, // Adjust this value to control bar width
+    categoryPercentage: 0.8, // Adjust this value to control space between bars
   };
 
   const status = workflow?.last_execution_status?.toLowerCase() || null;
@@ -830,12 +643,12 @@ const WorkflowGraph = ({ workflow }) => {
     />
   );
   switch (status) {
-    case 'success':
+    case "success":
       icon = <CheckCircleIcon className="w-6 h-6 text-green-500" />;
       break;
-    case 'failed':
-    case 'fail':
-    case 'failure':
+    case "failed":
+    case "fail":
+    case "failure":
       icon = <XCircleIcon className="w-6 h-6 text-red-500" />;
       break;
     default:
@@ -843,15 +656,17 @@ const WorkflowGraph = ({ workflow }) => {
   }
 
   return (
-    <div className="flex flex-row justify-start items-end w-full">
-      {!hasNoData || !show_real_data && <div className="flex items-center">{icon}</div>}
-      <div className="pt-8 w-full h-32">
-        {hasNoData && show_real_data ? (
+    <div className="flex flex-row items-center">
+      <div className="mr-2">{!hasNoData && icon}</div>
+      <div className="flex-grow h-24">
+        {hasNoData ? (
           <div className="flex justify-center items-center h-full text-gray-400">
             No data available
           </div>
         ) : (
-          <Bar data={chartData} options={chartOptions} />
+          <div className="h-full w-full custom-scrollbar overflow-hidden">
+            <Bar data={chartData} options={chartOptions} />
+          </div>
         )}
       </div>
     </div>

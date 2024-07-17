@@ -255,7 +255,7 @@ export default function WorkflowsPage() {
           {data.length === 0 ? (
               <WorkflowsEmptyState />
             ) : (
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {data.map((workflow) => (
                   <WorkflowTile key={workflow.id} workflow={workflow} />
                 ))}
