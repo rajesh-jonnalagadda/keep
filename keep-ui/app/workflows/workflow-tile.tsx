@@ -29,11 +29,13 @@ import { Provider as FullProvider } from "app/providers/providers";
 import "./workflow-tile.css";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import AlertTriggerModal from "./workflow-run-with-alert-modal";
-import { parseISO, set } from "date-fns";
+import { parseISO, set, differenceInSeconds } from "date-fns";
 import { Chart, CategoryScale, LinearScale, BarElement, Title as ChartTitle, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 import TimeAgo from 'react-timeago';
+import { WorkflowExecution } from "./builder/types";
+
 
 
 Chart.register(CategoryScale, LinearScale, BarElement, ChartTitle, Tooltip, Legend);
@@ -390,41 +392,6 @@ function WorkflowTile({ workflow }: { workflow: Workflow }) {
           <Loading />
         </div>
       )}
-      {/* <div className="relative flex flex-col bg-white rounded overflow-hidden shadow w-full lg:max-w-md">
-        <div className="absolute top-0 right-0 mt-2 mr-2 mb-2">
-          {WorkflowMenuSection({
-            onDelete: handleDeleteClick,
-            onRun: handleRunClick,
-            onDownload: handleDownloadClick,
-            onView: handleViewClick,
-            onBuilder: handleBuilderClick,
-            workflow,
-          })}
-        </div>
-        <div className="m-4">
-          <WorkflowGraph workflow={workflow} />
-          <div className="flex flex-col mt-2 gap-2">
-            <h2 className="truncate leading-6 font-bold text-base md:text-lg lg:text-xl">{workflow?.name || 'Unknown'}{'testing the flow with large text'}</h2>
-            <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-2">
-              <div className="flex flex-wrap justify-start items-center gap-2">
-                <button className="border border-gray-200 text-black py-1 px-4 text-sm rounded-full hover:bg-gray-100 font-bold">
-                  Interval
-                </button>
-                <button className="bg-white border border-gray-200 text-black py-1 px-4 text-sm rounded-full hover:bg-gray-100 font-bold">
-                  Trigger
-                </button>
-              </div>
-              {workflow?.last_execution_started ? (
-                <TimeAgo date={parseISO(workflow?.last_execution_started)} className="text-sm text-gray-500" />
-              ) : null
-              //  (
-              //   <div className="text-gray-500 text-sm"></div>
-              // )
-              }
-            </div>
-          </div>
-        </div>
-      </div> */}
       <div className="relative flex flex-col bg-white rounded overflow-hidden shadow w-full lg:max-w-md">
         <div className="absolute top-0 right-0 mt-2 mr-2 mb-2">
           {WorkflowMenuSection({
@@ -450,7 +417,7 @@ function WorkflowTile({ workflow }: { workflow: Workflow }) {
                 </button>
               </div>
               {workflow?.last_execution_started ? (
-                <TimeAgo date={parseISO(workflow?.last_execution_started)} className="text-sm text-gray-500" />
+                <TimeAgo date={parseISO(workflow?.last_execution_started?.toLocaleString())} className="text-sm text-gray-500" />
               ) : null
               }
             </div>
@@ -510,7 +477,7 @@ const demoColors = [
   'rgba(75, 192, 192, 1)', // Green
   'rgba(255, 99, 132, 1)', // Red
 ]
-const getLabels = (lastExecutions: { status: string, execution_time: number, started: string }[]) => {
+const getLabels = (lastExecutions: Pick<WorkflowExecution, 'execution_time' | 'status' | 'started'>[]) => {
   if (!lastExecutions || (lastExecutions && lastExecutions.length === 0)) {
     return show_real_data ? [] : demoLabels;
   }
@@ -520,17 +487,17 @@ const getLabels = (lastExecutions: { status: string, execution_time: number, sta
 }
 
 
-const getDataValues = (lastExecutions: { status: string, execution_time: number, started: string }[]) => {
+const getDataValues = (lastExecutions: Pick<WorkflowExecution, 'execution_time' | 'status' | 'started'>[]) => {
   if (!lastExecutions || (lastExecutions && lastExecutions.length === 0)) {
     return show_real_data ? [] : demoData;
   }
   return lastExecutions?.map((workflowExecution) => {
-    return workflowExecution?.execution_time
+    return workflowExecution?.execution_time || differenceInSeconds(Date.now(),  new Date(workflowExecution?.started));
   })
 }
 
 
-const getBackgroundColors = (lastExecutions: { status: string, execution_time: number, started: string }[]) => {
+const getBackgroundColors = (lastExecutions: Pick<WorkflowExecution, 'execution_time' | 'status' | 'started'>[]) => {
   if (!lastExecutions || (lastExecutions && lastExecutions.length === 0)) {
     return show_real_data ? [] : demoBgColors;
   }
@@ -547,7 +514,7 @@ const getBackgroundColors = (lastExecutions: { status: string, execution_time: n
   })
 }
 
-const getBorderColors = (lastExecutions: { status: string, execution_time: number, started: string }[]) => {
+const getBorderColors = (lastExecutions: Pick<WorkflowExecution, 'execution_time' | 'status' | 'started'>[]) => {
   if (!lastExecutions || (lastExecutions && lastExecutions.length === 0)) {
     return show_real_data ? [] : demoColors;
   }
@@ -565,7 +532,7 @@ const getBorderColors = (lastExecutions: { status: string, execution_time: numbe
   })
 }
 
-const WorkflowGraph = ({ workflow }) => {
+const WorkflowGraph = ({ workflow }:{workflow: Workflow}) => {
   const lastExecutions = useMemo(() => {
     const reversedExecutions = workflow?.last_executions?.slice(0, 15) || [];
     return reversedExecutions.reverse();
@@ -587,8 +554,8 @@ const WorkflowGraph = ({ workflow }) => {
                     bottom: 0,
                     left: 0,
                   },
-        barPercentage: 0.6, // Adjust this value to control bar width
-                // categoryPercentage: 0.8, // Adjust this value to control space between bars
+        barPercentage: 1, // Adjust this value to control bar width
+        categoryPercentage: 0.5, // Adjust this value to control space between bars
       },
     ],
   };
@@ -627,8 +594,6 @@ const WorkflowGraph = ({ workflow }) => {
     },
     responsive: true,
     maintainAspectRatio: false,
-    barPercentage: 0.7, // Adjust this value to control bar width
-    categoryPercentage: 0.8, // Adjust this value to control space between bars
   };
 
   const status = workflow?.last_execution_status?.toLowerCase() || null;
@@ -664,7 +629,7 @@ const WorkflowGraph = ({ workflow }) => {
             No data available
           </div>
         ) : (
-          <div className="h-full w-full custom-scrollbar overflow-hidden">
+          <div className="h-full w-full overflow-hidden">
             <Bar data={chartData} options={chartOptions} />
           </div>
         )}
@@ -672,7 +637,6 @@ const WorkflowGraph = ({ workflow }) => {
     </div>
   );
 };
-
 
 
 export default WorkflowTile;

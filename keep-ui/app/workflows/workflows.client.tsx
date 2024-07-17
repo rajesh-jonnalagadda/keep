@@ -10,7 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useSession } from "next-auth/react";
 import { fetcher } from "../../utils/fetcher";
-import { Workflow } from "./models";
+import { Workflow, MockWorkflow } from "./models";
 import { getApiURL } from "../../utils/apiUrl";
 import Loading from "../loading";
 import React from "react";
@@ -36,7 +36,7 @@ export default function WorkflowsPage() {
     (url: string) => fetcher(url, session?.accessToken!)
   );
 
-  const { data: mockWorkflows, error:mockError, isLoading: mockLoading } = useSWR<Partial<Workflow>[]>(
+  const { data: mockWorkflows, error:mockError, isLoading: mockLoading } = useSWR<MockWorkflow[]>(
     status === "authenticated" ? `${apiUrl}/workflows/random-templates` : null,
     (url: string) => fetcher(url, session?.accessToken!)
   );
@@ -262,7 +262,7 @@ export default function WorkflowsPage() {
               </div>
             )}
             <MockWorkflowCardSection
-              mockWorkflows={mockWorkflows}
+              mockWorkflows={mockWorkflows || []}
               mockError={mockError}
               mockLoading={mockLoading}
             />

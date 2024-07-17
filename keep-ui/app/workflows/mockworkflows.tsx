@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Workflow } from './models';
+import { MockWorkflow, Workflow } from './models';
 import { getApiURL } from "../../utils/apiUrl";
 import Loading from "../loading";
 import { Button } from "@tremor/react";
@@ -11,8 +11,7 @@ import { TiArrowRight } from "react-icons/ti";
 
 
 
-export function WorkflowSteps({ workflow }: { workflow: any }) {
-  console.log("workflow===========>", workflow);
+export function WorkflowSteps({ workflow }: { workflow: MockWorkflow}) {
   const isActionPresent = !!workflow?.actions?.length;
   return (
     <div className="flex gap-2 items-center mb-4 flex-wrap">
@@ -54,7 +53,11 @@ export function WorkflowSteps({ workflow }: { workflow: any }) {
   );
 }
 
-export default function MockWorkflowCardSection({ mockWorkflows, mockError, mockLoading }) {
+export default function MockWorkflowCardSection({ mockWorkflows, mockError, mockLoading }:{
+  mockWorkflows: MockWorkflow[],
+  mockError: any,
+  mockLoading: boolean | null,
+}) {
   const router = useRouter();
 
   const getNameFromId = (id: string) => {
@@ -66,6 +69,11 @@ export default function MockWorkflowCardSection({ mockWorkflows, mockError, mock
   }
 
   console.log("mockWorkflows====>", mockWorkflows);
+
+  // if mockError is not null, handle the error case
+  if (mockError) {
+    return <p>Error: {mockError.message}</p>;
+  }
 
   return (
     <section className="pt-10 mt-10">
@@ -88,9 +96,12 @@ export default function MockWorkflowCardSection({ mockWorkflows, mockError, mock
         </div>
       </div>
 
+      {mockError && <p className="text-center text-red-100 m-auto">Error: {mockError.message || "Something went wrong!"}</p>}
+      {!mockLoading && !mockError && mockWorkflows.length === 0 && <p className="text-center m-auto">No workflows found</p>}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {mockError && <p className="text-center text-red-100">Error: {mockError.message || "Something went wrong!"}</p>}
         {mockLoading && <Loading />}
-        {!mockLoading && mockWorkflows.length === 0 && <p>No workflows found</p>}
         {!mockLoading && mockWorkflows.length > 0 && mockWorkflows.map((template: any, index: number) => {
           const workflow = template.workflow;
           console.log("insise th emao workflwo", workflow);

@@ -255,7 +255,8 @@ class WorkflowStore:
                 if "workflow" in workflow_yaml:
                     workflow_yaml['name'] = workflow_yaml['workflow']['id']
                     workflow_yaml['workflow_raw'] = yaml.dump(workflow_yaml)
-                    workflows.append(workflow_yaml)
+                    workflow_yaml['workflow_raw_id'] = yaml.dump(workflow_yaml)
+                    workflows.append(workflow_yaml) = workflow_yaml['workflow']['id']
                     count += 1
 
                 self.logger.info(f"Workflow from {file} fetched successfully {workflow_yaml}")
