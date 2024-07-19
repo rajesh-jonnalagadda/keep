@@ -26,7 +26,7 @@ const links = [
 const DetailsSection = () => {
   const router = useRouter();
   return (
-    <section className="flex flex-col items-center justify-center mb-10">
+    <section className="flex flex-col items-center justify-center mb-10 custom-responsive-section">
       <Image
         src="/icons/workflow-icon.png"
         alt="loading"
@@ -53,13 +53,12 @@ const DetailsSection = () => {
       >
         Create a new workflow
       </Button>
-      <div className="mt-10 divide-y flex flex-col border border-gray-200 rounded bg-white shadow text-sm">
+      <div className="mt-10 overflow-x-auto">
+        <div className="divide-y flex flex-col border border-gray-200 rounded bg-white shadow text-sm inner-scrollable">
         {links.map((link) => (
           <div
             key={link.href}
-            onClick={() => {
-              router.push(link.href);
-            }}
+            onClick={() => { router.push(link.href) }}
             className="flex items-center p-2 bg-white hover:bg-gray-100 transition cursor-pointer gap-4"
           >
             <div className="flex flex-row items-center gap-2">
@@ -71,6 +70,7 @@ const DetailsSection = () => {
             </span>
           </div>
         ))}
+        </div>
       </div>
     </section>
   );

@@ -8,13 +8,14 @@ import PageClient from "./builder/page.client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { TiArrowRight } from "react-icons/ti";
+import './workflowStyles.css';
 
 export function WorkflowSteps({ workflow }: { workflow: MockWorkflow }) {
   const isStepPresent =
     !!workflow?.steps?.length &&
     workflow?.steps?.find((step: MockStep) => step?.provider?.type);
   return (
-    <div className="flex gap-2 mb-4 mt-6 items-center felx-wrap">
+    <div className="flex gap-2 items-center mb-4">
       {workflow?.steps?.map((step: any, index: number) => {
         const provider = step?.provider;
         return (
@@ -22,13 +23,14 @@ export function WorkflowSteps({ workflow }: { workflow: MockWorkflow }) {
             {provider && (
               <div key={`step-${index}`} className="flex items-end gap-2">
                 {index > 0 && (
-                  <TiArrowRight className="text-gray-500 size-8" />
+                  <TiArrowRight className="text-gray-500 size-8 align-self: center" />
                 )}
                 <Image
                   src={`/icons/${provider?.type}-icon.png`}
                   width={30}
                   height={30}
                   alt={provider?.type}
+                  className="mt-6"
                 />
               </div>
             )}
@@ -42,13 +44,14 @@ export function WorkflowSteps({ workflow }: { workflow: MockWorkflow }) {
             {provider && (
               <div key={`action-${index}`} className="flex items-end gap-2">
                 {(index > 0 || isStepPresent) && (
-                  <TiArrowRight className="text-gray-500 size-8" />
+                  <TiArrowRight className="text-gray-500 size-8 align-self: center" />
                 )}
                 <Image
                   src={`/icons/${provider?.type}-icon.png`}
                   width={30}
                   height={30}
                   alt={provider?.type}
+                  className="mt-6"
                 />
               </div>
             )}
@@ -104,29 +107,34 @@ export default function MockWorkflowCardSection({
   }
 
   return (
-    <div className="container pt-10 mt-10">
-      <h2 className="text-xl sm:text-2xl font-semibold mb-6">
-        Discover existing workflow templates
-      </h2>
-      {/* TODO: Implement the commented out code block */}
-      {/* This is a placeholder comment until the commented out code block is implemented */}
-      {/* <div className="flex flex-col sm:flex-row justify-between mb-6 flex-wrap gap-2">
-        <div className="flex flex-col sm:flex-row flex-wrap gap-2" >
-          <input
-            type="text"
-            placeholder="Search through workflow examples..."
-            className="px-4 py-2 border rounded"
+    <section className="pt-10 mt-10">
+      <div className="p-4 overflow-x-auto">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-center sm:text-left">
+          Discover existing workflow templates
+        </h2>
+        {/* <div className="flex flex-col sm:flex-row items-center justify-between mb-6 flex-wrap gap-2 min-w-full">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mb-4 sm:mb-0">
+            <input
+              type="text"
+              placeholder="Search through workflow examples..."
+              className="px-4 py-2 border rounded w-full sm:w-auto"
+            />
+            <button className="px-4 py-2 bg-gray-200 border rounded">
+              Integrations used
+            </button>
+          </div>
+          <MockFilterTabs 
+            tabs={[
+              { name: "All workflows" },
+              { name: "Notifications" },
+              { name: "Databases" },
+              { name: "CI/CD" },
+              { name: "Other" },
+            ]}
           />
-          <button className="px-4 py-2 bg-gray-200 border rounded">Integrations used</button>
-        </div>
-        <MockFilterTabs tabs={[
-          {name: "All workflows"},
-          {name: "Notifications"},
-          {name: "Databases"},
-          {name: "CI/CD"},
-          {name: "Other"},
-          ]}/>
-      </div> */}
+        </div> */}
+      </div>
+
       {mockError && (
         <p className="text-center text-red-100 m-auto">
           Error: {mockError.message || "Something went wrong!"}
@@ -149,12 +157,12 @@ export default function MockWorkflowCardSection({
             const workflow = template.workflow;
             return (
               <Card key={index} className="p-4 flex flex-col justify-between">
-                <div>
+                <div className="overflow-hidden>
                   <WorkflowSteps workflow={workflow} />
                   <h3 className="text-lg sm:text-xl font-semibold line-clamp-2">
                     {workflow.name || getNameFromId(workflow.id)}
                   </h3>
-                  <p className="mt-2 text-sm sm:text-base line-clamp-3">
+                  <p className="mt-2 text-sm sm:text-base line-clamp-3 custom-truncate">
                     {workflow.description}
                   </p>
                 </div>
@@ -177,6 +185,6 @@ export default function MockWorkflowCardSection({
             );
           })}
       </div>
-    </div>
+    </section>
   );
 }
