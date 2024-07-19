@@ -1,0 +1,69 @@
+.custom-truncate {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* styles.css */
+
+/* Responsive styles for screens below 532px */
+@media (max-width: 532px) {
+  .hide-on-small {
+    display: none;
+  }
+  
+  .custom-responsive-section {
+    overflow-x: auto;
+  }
+
+  .custom-responsive-section .inner-scrollable {
+    min-width: 400px;
+  }
+}
+/* Additional responsive styles for screens below 320px */
+@media (max-width: 320px) {
+  .custom-responsive-section {
+    padding: 0.5rem;
+  }
+
+  .custom-responsive-section h2 {
+    font-size: 1rem; /* Adjust the font size for smaller screens */
+  }
+
+  .custom-responsive-section p {
+    font-size: 0.75rem; /* Adjust the font size for smaller screens */
+  }
+
+  .custom-responsive-section .max-w-md {
+    max-width: 100%; /* Ensure the text container takes full width */
+  }
+
+  .custom-responsive-section .mt-10 {
+    margin-top: 1.5rem; /* Adjust margin for smaller screens */
+  }
+
+  .custom-responsive-section .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem; /* Adjust padding for buttons */
+  }
+
+  .custom-responsive-section .py-2 {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem; /* Adjust padding for buttons */
+  }
+
+  .custom-responsive-section .p-2 {
+    padding: 0.25rem; /* Adjust padding for items */
+  }
+
+  .workflow-card {
+    padding: 0.5rem;
+    max-height: auto; /* Adjust height for better fit */
+  }
+
+  .workflow-card .p-2 {
+    padding: 0.5rem; /* Adjust padding for better fit */
+  }
+}
