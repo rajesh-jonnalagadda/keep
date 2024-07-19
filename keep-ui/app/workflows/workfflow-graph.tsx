@@ -245,11 +245,11 @@ export default function WorkflowGraph({ workflow }: { workflow: Workflow }) {
   }
 
   return (
-    <div className="container">
+    <div className="container h-24">
       <div className="flex items-center">{getIcon()}</div>
       <div>
         {hasNoData && show_real_data ? (
-          <div className="flex justify-center items-center text-gray-400">
+          <div className="flex justify-center h-full items-center text-gray-400">
             No data available
           </div>
         ) : (
