@@ -16,6 +16,7 @@ class RunbookContent(SQLModel, table=True):
     content: str = Field(sa_column=Column(Text), nullable=False)  # Using SQLAlchemy's Text type
     link: str = Field(sa_column=Column(Text), nullable=False)  # Using SQLAlchemy's Text type
     encoding: Optional[str] = None
+    file_name: str
     created_at: datetime = Field(default_factory=datetime.utcnow)  # Timestamp for creation
 
     class Config:
@@ -53,6 +54,7 @@ class RunbookContentDto(BaseModel, extra="ignore"):
     id: UUID
     content: str
     link: str
+    file_name: str
     encoding: Optional[str] = None
 
     @classmethod
@@ -61,7 +63,8 @@ class RunbookContentDto(BaseModel, extra="ignore"):
             id=content.id,
             content=content.content,
             link=content.link,
-            encoding=content.encoding
+            encoding=content.encoding,
+            file_name=content.file_name
         )
 
 class RunbookDtoOut(RunbookDto):

@@ -118,3 +118,20 @@ def create_runbook(
     runbook_dto= provider.pull_runbook(repo=repo, branch=branch, md_path=md_path, title=title)
     return RunbookService.create_runbook(session, tenant_id, runbook_dto)
 
+
+@router.get(
+    "",
+    description="All Runbooks",
+    # response_model=RunbookDtoOut,
+)
+def create_runbook(
+    
+    authenticated_entity: AuthenticatedEntity = Depends(
+        IdentityManagerFactory.get_auth_verifier(["read:runbook"])
+    ),
+    session: Session = Depends(get_session)
+):
+    tenant_id = authenticated_entity.tenant_id
+    logger.info("get all Runbooks", extra={tenant_id: tenant_id})
+    return RunbookService.get_all_runbooks(session, tenant_id)    
+

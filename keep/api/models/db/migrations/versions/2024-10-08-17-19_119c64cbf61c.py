@@ -1,8 +1,8 @@
 """add runbook table
 
-Revision ID: 8902e1a17f66
+Revision ID: 119c64cbf61c
 Revises: 01ebe17218c0
-Create Date: 2024-10-08 16:09:28.158034
+Create Date: 2024-10-08 17:19:14.369121
 
 """
 
@@ -13,7 +13,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "8902e1a17f66"
+revision = "119c64cbf61c"
 down_revision = "01ebe17218c0"
 branch_labels = None
 depends_on = None
@@ -41,6 +41,7 @@ def upgrade() -> None:
         sa.Column("link", sa.Text(), nullable=True),
         sa.Column("id", sqlmodel.sql.sqltypes.GUID(), nullable=False),
         sa.Column("encoding", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+        sa.Column("file_name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(["runbook_id"], ["runbook.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),

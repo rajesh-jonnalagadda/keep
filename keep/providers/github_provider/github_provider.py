@@ -141,7 +141,8 @@ class GithubProvider(BaseRunBookProvider):
             "contents": [{
                 "content":runbook.content,
                 "link": f"https://api.github.com/{repo.get('full_name')}/blob/{repo.get('default_branch')}/{runbook.path}",
-                "encoding": runbook.encoding
+                "encoding": runbook.encoding,
+                "file_name": runbook.name
                 }],
             "title": title,
         }

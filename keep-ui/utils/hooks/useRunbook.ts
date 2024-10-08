@@ -14,7 +14,7 @@ export const useRunBookTriggers = (values: any, refresh: number) => {
   const [synced, setSynced] = useState(false);
   const [fileData, setFileData] = useState<any>({});
   const [reposData, setRepoData] = useState<any>([]);
-  const { pathToMdFile, repoName, userName, providerId, domain, runBookTitle } = values || {};
+  const { pathToMdFile, repoName, userName, providerId, domain } = values || {};
   const { data: session } = useSession();
   const { installed_providers, providers } = (providersData?.data ||
     {}) as ProvidersResponse;
@@ -55,7 +55,7 @@ export const useRunBookTriggers = (values: any, refresh: number) => {
   }, [refresh]);
 
   const handleSubmit = async (data: any) => {
-    const { pathToMdFile, repoName } = data;
+    const { pathToMdFile, repoName, runBookTitle } = data;
     try {
       if(!provider){
         return toast("Please select a provider");

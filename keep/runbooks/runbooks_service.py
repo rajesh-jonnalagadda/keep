@@ -36,7 +36,8 @@ class RunbookService:
                     runbook_id=new_runbook.id,
                     content=content["content"],
                     link=content["link"],
-                    encoding=content["encoding"]
+                    encoding=content["encoding"],
+                    file_name=content["file_name"]
                 )
                 for content in contents
             ]
@@ -49,3 +50,13 @@ class RunbookService:
             return result
         except ValidationError as e:
             logger.exception(f"Failed to create runbook {e}")
+
+    @staticmethod
+    def get_all_runbooks(session: Session, tenant_id: str) -> List[RunbookDtoOut]:
+        runbooks = session.exec(
+            select(Runbook)
+            .where(Runbook.tenant_id == tenant_id)
+            .options(selectinload(Runbook.contents)).limit(1000)
+        )
+
+        return [RunbookDtoOut.from_orm(runbook) for runbook in runbooks]            
