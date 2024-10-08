@@ -10,10 +10,6 @@ from keep.secretmanager.secretmanagerfactory import SecretManagerFactory
 from keep.runbooks.runbooks_service import (
     RunbookService
     )
-from keep.api.models.db.runbook import (
-    RunbookDtoOut
-    )
-
 
 logger = logging.getLogger(__name__)
 

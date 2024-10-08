@@ -1,9 +1,7 @@
 import logging
-from typing import List, Optional
+from typing import List
 from pydantic import ValidationError
-from sqlalchemy.orm import joinedload, selectinload
-from uuid import UUID
-import json
+from sqlalchemy.orm import  selectinload
 
 from sqlmodel import Session, select
 from keep.api.models.db.runbook import (

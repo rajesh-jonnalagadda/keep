@@ -272,7 +272,7 @@ class GitlabProvider(BaseRunBookProvider):
             except HTTPError as e:
                 raise Exception(f"Failed to get runbook: {e}")
 
-            return self._format_runbook(resp.json(), repo_met, title)
+            return self._format_runbook(resp.json(), repo_meta, title)
 
         raise Exception("Failed to get runbook: repository or md_path not set")       
 
